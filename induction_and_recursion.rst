@@ -909,7 +909,7 @@ The ``map`` function is even more tedious to define by hand than the ``tail`` fu
 Inaccessible Terms
 ------------------
 
-Sometimes an argument in a dependent matching pattern is not essential to the definition, but nonetheless has to be included to specialize the type of the expression appropriately. Lean allows users to mark such subterms as *inaccessible* for pattern matching. These annotations are essential, for example, when a term occurring in the left-hand side is neither a variable nor a constructor application, because these are not suitable targets for pattern matching. We can view such inaccessible terms as "don't care" components of the patterns. You can declare a subterm inaccessible by writing ``.(t)``. If the inaccessible term can be inferred, you can also write ``._``.
+Sometimes an argument in a dependent pattern matching is not essential to the definition, but nonetheless has to be included to specialize the type of the expression appropriately. Lean allows users to mark such subterms as *inaccessible* for pattern matching. These annotations are essential, for example, when a term occurring in the left-hand side is neither a variable nor a constructor application, because these are not suitable targets for pattern matching. We can view such inaccessible terms as "don't care" components of the patterns. You can declare a subterm inaccessible by writing ``.(t)``. If the inaccessible term can be inferred, you can also write ``._``.
 
 The following example can be found in [GoMM06]_. We declare an inductive type that defines the property of "being in the image of ``f``". You can view an element of the type ``image_of f b`` as evidence that ``b`` is in the image of ``f``, whereby the constructor ``imf`` is used to build such evidence. We can then define any function ``f`` with an "inverse" which takes anything in the image of ``f`` to an element that is mapped to it. The typing rules forces us to write ``f a`` for the first argument, but this term is neither a variable nor a constructor application, and plays no role in the pattern-matching definition. To define the function ``inverse`` below, we *have to* mark ``f a`` inaccessible.
 
@@ -949,7 +949,7 @@ Inaccessible terms can be used to clarify and control definitions that make use 
 
     end vector
 
-The argument ``{n : ℕ}`` has to appear after the colon, because it cannot be held fixed throughout the definition. When implementing this definition, the equation compiler starts with a case distinction as to whether the first argument is ``0`` or of the form ``n+1``. This is followed by nested case splits on the next two arguments, and in each case the equation compiler rules out the cases are not compatible with the first pattern.
+The argument ``{n : ℕ}`` has to appear after the colon, because it cannot be held fixed throughout the definition. When implementing this definition, the equation compiler starts with a case distinction as to whether the first argument is ``0`` or of the form ``n+1``. This is followed by nested case splits on the next two arguments, and in each case the equation compiler rules out the cases that are not compatible with the first pattern.
 
 But, in fact, a case split is not required on the first argument; the ``cases_on`` eliminator for ``vector`` automatically abstracts this argument and replaces it by ``0`` and ``n + 1`` when we do a case split on the second argument. Using inaccessible terms, we can prompt the equation compiler to avoid the case split on ``n``:
 
