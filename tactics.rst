@@ -69,7 +69,7 @@ You can see the resulting proof term with the ``#print`` command:
     #print test
     -- END
 
-You can write a tactic script incrementally. If you run Lean on an incomplete tactic proof bracketed by ``begin`` and ``end``, the system reports all the unsolved goals that remain. If you are running Lean with its Emacs interface, you can see this information by putting your cursor on the ``end`` symbol, which should be underlined. In the Emacs interface, there is another extremely useful trick: if you put your cursor on a line of a tactic proof and press "C-c C-g", Lean will show you the goal that remains at the end of the line.
+You can write a tactic script incrementally. In VS Code, you can open a window to display messages by pressing ``Ctrl-Shift-Enter``, and that window will then show you the current goal whenever the cursor in is a tactic block. In Emacs, you can see the goal at the end of any line by pressing ``C-c C-g``, or see the remaining goal in an incomplete proof by putting the cursor on the ``end`` symbol.
 
 Tactic commands can take compound expressions, not just single identifiers. The following is a shorter version of the preceding proof:
 
@@ -113,7 +113,7 @@ See :numref:`tactic_combinators` for a more precise description of the semantics
     theorem test (p q : Prop) (hp : p) (hq : q) : p ∧ q ∧ p :=
     by exact and.intro hp (and.intro hq hp)
 
-In the Lean Emacs mode, if you put your cursor on the "b" in ``by`` and press ``C-c C-g``, Lean shows you the goal that the tactic is supposed to meet. In VS Code, you can open a window with the goals by pressing ``Ctrl-Shift-Enter``.
+In VS Code, the tactic state will appear in the messages window whenever the cursor is within the contexts of the ``by``. In the Lean Emacs mode, if you put your cursor on the "b" in ``by`` and press ``C-c C-g``, Lean shows you the goal that the tactic is supposed to meet.
 
 We will see below that hypotheses can be introduced, reverted, modified, and renamed over the course of a tactic block. As a result, it is impossible for the Lean parser to detect when an identifier that occurs in a tactic block refers to a section variable that should therefore be added to the context. As a result, you need to explicitly tell Lean to include the relevant entities:
 
@@ -250,9 +250,9 @@ The ``assumption`` tactic looks through the assumptions in context of the curren
 
 .. code-block:: lean
 
+    -- BEGIN
     variables x y z w : ℕ
 
-    -- BEGIN
     example (h₁ : x = y) (h₂ : y = z) (h₃ : z = w) : x = w :=
     begin
       apply eq.trans h₁,
@@ -478,7 +478,7 @@ Some additional tactics are useful for constructing and destructing propositions
       left, exact hq
     end
 
-After ``cases h`` is applied, there are two goals. In the first, the hypothesis ``h : p ∨ q`` is replaced by ``hp : p``, and in the second, it is replaced by ``hq : q``. The ``cases`` can also be used to decompose a conjunction.
+After ``cases h`` is applied, there are two goals. In the first, the hypothesis ``h : p ∨ q`` is replaced by ``hp : p``, and in the second, it is replaced by ``hq : q``. The ``cases`` tactic can also be used to decompose a conjunction.
 
 .. code-block:: lean
 
@@ -547,7 +547,7 @@ Here is another example:
 
 Here the semicolon after ``split`` tells Lean to apply the ``assumption`` tactic to both of the goals that are introduced by splitting the conjunction; see :numref:`tactic_combinators` for more information.
 
-These tactics can be used on data just as well as propositions. In the next two example, they are used to define functions which swap the components of the product and sum types:
+These tactics can be used on data just as well as propositions. In the next two examples, they are used to define functions which swap the components of the product and sum types:
 
 .. code-block:: lean
 
@@ -789,7 +789,7 @@ Lean also has a ``let`` tactic, which is similar to the ``have`` tactic, but is 
       reflexivity
     end
 
-As with ``have``, you can leave the type implicit by writing ``let a : ℕ := 3 * 2``. The difference between ``let`` and ``have`` is that ``let`` introduces a local definition in the context, so that the definition of the local constant can be unfolded in the proof.
+As with ``have``, you can leave the type implicit by writing ``let a := 3 * 2``. The difference between ``let`` and ``have`` is that ``let`` introduces a local definition in the context, so that the definition of the local constant can be unfolded in the proof.
 
 For even more structured proofs, you can nest ``begin...end`` blocks within other ``begin...end`` blocks. In a nested block, Lean focuses on the first goal, and generates an error if it has not been fully solved at the end of the block. This can be helpful in indicating the separate proofs of multiple subgoals introduced by a tactic.
 
@@ -818,7 +818,7 @@ For even more structured proofs, you can nest ``begin...end`` blocks within othe
         exact ⟨hpr.left, or.inr hpr.right⟩
     end
 
-Here, we have introduced a new ``begin..end`` block whenever a tactic leaves more than one subgoal. You can check (using ``C-c C-g`` in Emacs mode, for example) that at every line in this proof, there is only one goal visible. Notice that you still need to use a comma after a ``begin...end`` block when there are remaining goals to be discharged.
+Here, we have introduced a new ``begin..end`` block whenever a tactic leaves more than one subgoal. You can check that at every line in this proof, there is only one goal visible. Notice that you still need to use a comma after a ``begin...end`` block when there are remaining goals to be discharged.
 
 Within a ``begin...end`` block, you can abbreviate nested occurrences of ``begin`` and ``end`` with curly braces:
 
@@ -1197,9 +1197,9 @@ As with ``rw``, you can use the keyword ``at`` to simplify a hypothesis:
 
 .. code-block:: lean
 
+    -- BEGIN
     variables (x y z : ℕ) (p : ℕ → Prop)
 
-    -- BEGIN
     example (h : p ((x + 0) * (0 + y * 1 + z * 0))) : 
       p (x * y) :=
     by { simp at h, assumption }
@@ -1328,7 +1328,7 @@ One thing that makes the simplifier especially useful its capabilities can grow 
 
     def mk_symm (xs : list α) := xs ++ reverse xs
 
-Then for any list ``xs``, ``reverse (mk_symm xs)`` is equal to ``xs``, which can easily be proved by unfolding the definition:
+Then for any list ``xs``, ``reverse (mk_symm xs)`` is equal to ``mk_symm xs``, which can easily be proved by unfolding the definition:
 
 .. code-block:: lean
 
@@ -1336,10 +1336,9 @@ Then for any list ``xs``, ``reverse (mk_symm xs)`` is equal to ``xs``, which can
     open list
     universe u  
     variables {α : Type} (x y z : α) (xs ys zs : list α)
-
-    -- BEGIN
     def mk_symm (xs : list α) := xs ++ reverse xs
 
+    -- BEGIN
     theorem reverse_mk_symm (xs : list α) : 
       reverse (mk_symm xs) = mk_symm xs :=
     by { unfold mk_symm, simp }
@@ -1353,10 +1352,9 @@ Or even more simply,
     open list
     universe u  
     variables {α : Type} (x y z : α) (xs ys zs : list α)
-
-    -- BEGIN
     def mk_symm (xs : list α) := xs ++ reverse xs
 
+    -- BEGIN
     theorem reverse_mk_symm (xs : list α) : 
       reverse (mk_symm xs) = mk_symm xs :=
     by simp [mk_symm]
@@ -1468,7 +1466,7 @@ The attribute can also be applied any time after the theorem is declared:
     by simp at h; assumption
     -- END
 
-Once the attribute is applied, however, there is no way to remove it; it persists in any file that imports the one where the attribute is assigned. As we will see in :numref:`attributes`, one can limit the scope of an attribute to the current file or section using the ``local attribute`` command:
+Once the attribute is applied, however, there is no way to remove it; it persists in any file that imports the one where the attribute is assigned. As we will discuss further in :numref:`attributes`, one can limit the scope of an attribute to the current file or section using the ``local attribute`` command:
 
 .. code-block:: lean
 
@@ -1531,7 +1529,7 @@ You can even create your own sets of simplifier rules, to be applied in special 
     by simp with my_simps at h; assumption
     -- END
 
-The command ``run_cmd mk_simp_attr `my_simps`` creates a new attribute ``[my_simps]``. (The backtick is used to indicate that ``my_simps`` is a new name, something that is explained more fully in `Programming in Lean <https://leanprover.github.io/programming_in_lean/>`__.) The command ``simp with my_simps`` then adds all the theorems that have been marked with attribute ``[my_simps]`` to the default set of theorems marked with attribute ``[simp]`` before applying ``[simp]``, and similarly with ``simp at h with my_simps``.
+The command ``run_cmd mk_simp_attr `my_simps`` creates a new attribute ``[my_simps]``. (The backtick is used to indicate that ``my_simps`` is a new name, something that is explained more fully in `Programming in Lean <https://leanprover.github.io/programming_in_lean/>`__.) The command ``simp with my_simps`` then adds all the theorems that have been marked with attribute ``[my_simps]`` to the default set of theorems marked with attribute ``[simp]`` before applying ``[simp]``, and similarly with ``simp with my_simps at h``.
 
 Note that the various ``simp`` options we have discussed --- giving an explicit list of rules, using ``at`` to specify the location, and using ``with`` to add additional simplifier rules --- can be combined, but the order they are listed is rigid. You can see the correct order in an editor by placing the cursor on the ``simp`` identifier to see the documentation string that is associated with it.
 

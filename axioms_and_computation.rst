@@ -292,7 +292,7 @@ What makes the ``quot`` construction into a bona fide quotient is the following 
 
 This is the axiom that asserts that any two elements of ``α`` that are related by ``r`` become identified in the quotient. If a theorem or definition makes use of ``quot.sound``, it will show up in the ``#print axioms`` command.
 
-Of course, the quotient construction is most commonly used in situations when ``r`` is an equivalence relation. Given ``r`` as above, if we define `r'` according to the rule `r' a b` iff `quot.mk r a = quot.mk r b`, then it's clear that `r'` is an equivalence relation. Indeed, `r'` is the *kernel* of the function ``a ↦ quot.mk r``.  The axiom ``quot.sound`` says that ``r a b`` implies ``r' a b``. Using ``quot.lift`` and ``quot.ind``, we can show that ``r'`` is the smallest equivalence relation containing ``r``, in the sense that if ``r''`` is any equivalence relation containing ``r``, then ``r' a b`` implies ``r'' a b``. In particular, if ``r`` was an equivalence relation to start with, then for all ``a`` and ``b`` we have ``r a b`` iff ``r' a b``.
+Of course, the quotient construction is most commonly used in situations when ``r`` is an equivalence relation. Given ``r`` as above, if we define ``r'`` according to the rule ``r' a b`` iff ``quot.mk r a = quot.mk r b``, then it's clear that ``r'`` is an equivalence relation. Indeed, ``r'`` is the *kernel* of the function ``a ↦ quot.mk r a``.  The axiom ``quot.sound`` says that ``r a b`` implies ``r' a b``. Using ``quot.lift`` and ``quot.ind``, we can show that ``r'`` is the smallest equivalence relation containing ``r``, in the sense that if ``r''`` is any equivalence relation containing ``r``, then ``r' a b`` implies ``r'' a b``. In particular, if ``r`` was an equivalence relation to start with, then for all ``a`` and ``b`` we have ``r a b`` iff ``r' a b``.
 
 To support this common use case, the standard library defines the notion of a *setoid*, which is simply a type with an associated equivalence relation:
 
@@ -339,7 +339,7 @@ Given a type ``α``, a relation ``r`` on ``α``, and a proof ``p`` that ``r`` is
 
     end hidden
 
-The constants ``quotient.mk``, ``quotient.ind``, ``quotient.lift``, and ``quotient.sound`` are nothing more than the specializations of the corresponding elements of ``quot``. The fact that type class inference can find the setoid associated to a type ``α`` brings a number of benefits. First, we can use the notation ``a ≈ b`` (entered with ``\eq`` in Emacs) for ``setoid.r a b``, where the instance of ``setoid`` is implicit in the notation ``setoid.r``. We can use the generic theorems ``setoid.refl``, ``setoid.symm``, ``setoid.trans`` to reason about the relation. Specifically with quotients we can use the generic notation ``⟦a⟧`` for ``quot.mk setoid.r`` where the instance of ``setoid`` is implicit in the notation ``setoid.r``, as well as the theorem ``quotient.exact``:
+The constants ``quotient.mk``, ``quotient.ind``, ``quotient.lift``, and ``quotient.sound`` are nothing more than the specializations of the corresponding elements of ``quot``. The fact that type class inference can find the setoid associated to a type ``α`` brings a number of benefits. First, we can use the notation ``a ≈ b`` (entered with ``\approx``) for ``setoid.r a b``, where the instance of ``setoid`` is implicit in the notation ``setoid.r``. We can use the generic theorems ``setoid.refl``, ``setoid.symm``, ``setoid.trans`` to reason about the relation. Specifically with quotients we can use the generic notation ``⟦a⟧`` for ``quot.mk setoid.r`` where the instance of ``setoid`` is implicit in the notation ``setoid.r``, as well as the theorem ``quotient.exact``:
 
 .. code-block:: lean
 
@@ -969,7 +969,7 @@ Together with choice, we also get the stronger principle that every proposition 
 
 In contrast to ``p ∨ ¬ p``, which can only eliminate to ``Prop``, the type ``decidable p`` is equivalent to the sum type ``p ⊕ ¬ p``, which can eliminate to any type. It is this data that is needed to write an if-then-else expression.
 
-As an example of classical reasoning, we use ``some`` to show that if ``f : α → β`` is injective and ``α`` is inhabited, then ``f`` has a left inverse. To define the left inverse ``linv``, we use a dependent if-then-else expression. Recall that ``if h : c then t else e`` is notation for ``dite c (λ h : c, t) (λ h : ¬ c, e)``. In the definition of ``linv``, choice is used twice: first, to show that ``(∃ a : A, f a = b)`` is "decidable," and then to choose an ``a`` such that ``f a = b``. Notice that we make ``prop_decidable`` a local instance to justify the if-then-else expression.
+As an example of classical reasoning, we use ``some`` to show that if ``f : α → β`` is injective and ``α`` is inhabited, then ``f`` has a left inverse. To define the left inverse ``linv``, we use a dependent if-then-else expression. Recall that ``if h : c then t else e`` is notation for ``dite c (λ h : c, t) (λ h : ¬ c, e)``. In the definition of ``linv``, choice is used twice: first, to show that ``(∃ a : A, f a = b)`` is "decidable," and then to choose an ``a`` such that ``f a = b``. Notice that we make ``prop_decidable`` a local instance to justify the if-then-else expression. (See also the discussion in :numref:`decidable_propositions`.)
 
 .. code-block:: lean
 

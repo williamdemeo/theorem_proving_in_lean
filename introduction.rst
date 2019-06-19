@@ -25,7 +25,7 @@ The *Lean* project was launched by Leonardo de Moura at Microsoft Research Redmo
 
 There are currently two ways to use Lean. The first is to run it from the web: a Javascript version of Lean, a standard library of definitions and theorems, and an editor are actually downloaded to your browser and run there. This provides a quick and convenient way to begin experimenting with the system.
 
-The second way to use Lean is to install and run it natively on your computer. The native version is much faster than the web version, and is more flexible in other ways, too. Special modes in Emacs and Visual Studio Code offer powerful support for writing and debugging proofs, and is much better suited for serious use. The source code, and instructions for building Lean, are available at https://github.com/leanprover/lean/.
+The second way to use Lean is to install and run it natively on your computer. The native version is much faster than the web version, and is more flexible in other ways, too. Special modes in Visual Studio Code (VS Code for short) and Emacs offer powerful support for writing and debugging proofs, and is much better suited for serious use. The source code, and instructions for building Lean, are available at https://github.com/leanprover/lean/.
 
 This tutorial describes the current version of Lean, known as Lean 3. A prior version, Lean 2, had special support for homotopy type theory. You can find Lean 2 and the HoTT library at https://github.com/leanprover/lean2/. The tutorial for that version of Lean is at https://leanprover.github.io/tutorial/.
 
@@ -56,7 +56,7 @@ If you are reading the book online, you will see a button that reads "try it!" P
 Acknowledgments
 ---------------
 
-This tutorial is an open access project maintained on Github. Many people have contributed to the effort, providing corrections, suggestions, examples, and text. We are grateful to Ulrik Buchholz, Kevin Buzzard, Mario Carneiro, Nathan Carter, Amine Chaieb, William DeMeo, Floris van Doorn, Gabriel Ebner, Anthony Hart, Simon Hudon, Sean Leather, Assia Mahboubi, Patrick Massot, Christopher John Mazey, Sebastian Ullrich, Daniel Velleman, and Théo Zimmerman for their contributions, and we apologize to those whose names we have inadvertently omitted.
+This tutorial is an open access project maintained on Github. Many people have contributed to the effort, providing corrections, suggestions, examples, and text. We are grateful to Ulrik Buchholz, Kevin Buzzard, Mario Carneiro, Nathan Carter, Amine Chaieb, Joe Corneli, William DeMeo, Marcus Klaas de Vries, Gabriel Ebner, Anthony Hart, Simon Hudon, Sean Leather, Assia Mahboubi, Patrick Massot, Christopher John Mazey, Sebastian Ullrich, Floris van Doorn, Daniel Velleman, and Théo Zimmerman for their contributions, and we apologize to those whose names we have inadvertently omitted.
 
 .. [CoHu88] Thierry Coquand and Gerard Huet. The calculus of constructions. Inf. Comput., 76(2-3):95–120, February 1988.
 

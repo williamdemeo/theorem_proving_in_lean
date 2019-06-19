@@ -84,7 +84,7 @@ Note that double does *not* have ``y`` as argument. Variables are only included 
       #check @baz
     end
 
-The ``omit`` command simply undoes the effect of the ``include``; it does not prevent the arguments from being included automatically in subsequent theorems that mention them. The scope of the ``include`` statement can also be delimited by enclosing it in a section.
+The ``omit`` command simply undoes the effect of the ``include``. It does not, however, prevent the arguments from being included automatically in subsequent theorems that mention them. The scope of the ``include`` statement can also be delimited by enclosing it in a section.
 
 .. code-block:: lean
 
@@ -237,14 +237,14 @@ creates aliases for only the identifiers listed. The command
 
     open nat (hiding succ add sub)
 
-creates aliases for everything in the ``nat`` namespace *except* the identifiers lists. The command
+creates aliases for everything in the ``nat`` namespace *except* the identifiers listed. The command
 
 .. code-block:: lean
 
     open nat (renaming mul → times) (renaming add → plus) 
       (hiding succ sub)
 
-creates aliases for everything in the ``nat`` namespace except ``succ`` and ``sub``, renaming ``nat.add`` to ``plus``, and renaming the protected definition ``nat.induction_on`` to ``induction_on``.
+creates aliases for everything in the ``nat`` namespace except ``succ`` and ``sub``, renaming ``nat.add`` to ``plus``.
 
 It is sometimes useful to ``export`` aliases from one namespace to another, or to the top level. The command
 
@@ -261,108 +261,131 @@ Attributes
 
 The main function of Lean is to translate user input to formal expressions that are checked by the kernel for correctness and then stored in the environment for later use. But some commands have other effects on the environment, either assigning attributes to objects in the environment, defining notation, or declaring instances of type classes, as described in :numref:`Chapter %s <type_classes>`. Most of these commands have global effects, which is to say, that they remain in effect not only in the current file, but also in any file that imports it. However, such commands can often be prefixed with the ``local`` modifier, which indicates that they only have effect until the current ``section`` or ``namespace`` is closed, or until the end of the current file.
 
-In :numref:`using_the_simplifier`, we saw that theorems can be annotated with the ``[simp]`` attribute, which makes them available for use by the simplifier. The following example defines divisibility on the natural numbers, uses it to make the natural numbers an instance of a type for which the divisibility notation ``\|`` is available (the ``instance`` command will be explained in :numref:`Chapter %s <type_classes>`), and assigns the ``[simp]`` attribute.
+In :numref:`using_the_simplifier`, we saw that theorems can be annotated with the ``[simp]`` attribute, which makes them available for use by the simplifier. The following example defines the prefix relation on lists, proves that this relation is reflexive, and assigns the ``[simp]`` attribute to that theorem.
 
 .. code-block:: lean
 
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
+    variable {α : Type*}
 
-    instance : has_dvd nat := ⟨nat.dvd⟩
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := 
+    ∃ t, l₁ ++ t = l₂
+
+    infix ` <+: `:50 := is_prefix
 
     attribute [simp]
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
+    theorem list.is_prefix_refl (l : list α) : l <+: l :=
+    ⟨[], by simp⟩
 
-    example : 5 ∣ 5 := by simp
+    example : [1, 2, 3] <+: [1, 2, 3] := by simp
 
-Here the simplifier proves ``5 ∣ 5`` by rewriting it to ``true``. Lean allows the alternative annotation ``@[simp]`` before a theorem to assign the attribute:
+The simplifier then proves ``[1, 2, 3] <+: [1, 2, 3]`` by rewriting it to ``true``. Lean allows the alternative annotation ``@[simp]`` before a theorem to assign the attribute:
 
 .. code-block:: lean
 
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
+    variable {α : Type*}
 
-    instance : has_dvd nat := ⟨nat.dvd⟩
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    infix ` <+: `:50 := is_prefix
 
     -- BEGIN
     @[simp]
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
+    theorem list.is_prefix_refl (l : list α) : l <+: l :=
+    ⟨[], by simp⟩
     -- END
 
 One can also assign the attribute any time after the definition takes place:
 
 .. code-block:: lean
 
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
+    variable {α : Type*}
 
-    instance : has_dvd nat := ⟨nat.dvd⟩
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    infix ` <+: `:50 := is_prefix
 
     -- BEGIN
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
+    theorem list.is_prefix_refl (l : list α) : l <+: l :=
+    ⟨[], by simp⟩
 
-    attribute [simp] nat.dvd_refl
+    attribute [simp] list.is_prefix_refl
     -- END
 
-In all these cases, the attribute remains in effect in any file that imports the one in which the declaration occurs. But adding the ``local`` modifier restricts the scope:
+In all these cases, the attribute remains in effect in any file that imports the one in which the declaration occurs. Adding the ``local`` modifier restricts the scope:
 
 .. code-block:: lean
 
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
+    variable {α : Type*}
 
-    instance : has_dvd nat := ⟨nat.dvd⟩
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    infix ` <+: `:50 := is_prefix
 
     -- BEGIN
     section
     local attribute [simp]
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
+    theorem list.is_prefix_refl (l : list α) : l <+: l :=
+    ⟨[], by simp⟩
 
-    example : 5 ∣ 5 := by simp
-    end
-
-    -- error:
-    -- example : 5 ∣ 5 := by simp
-    -- END
-
-In fact, the ``instance`` command works by automatically generating a theorem name and assigning an ``[instance]`` attribute to it. The declaration can also be made local:
-
-.. code-block:: lean
-
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
-
-    -- BEGIN
-    section
-    def has_dvd_nat : has_dvd nat := ⟨nat.dvd⟩
-
-    local attribute [instance] has_dvd_nat
-
-    local attribute [simp]
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
-
-    example : 5 ∣ 5 := by simp
+    example : [1, 2, 3] <+: [1, 2, 3] := by simp
     end
 
     -- error: 
-    -- #check 5 ∣ 5
+    -- example : [1, 2, 3] <+: [1, 2, 3] := by simp
+    -- END
+
+For another example, we can use the ``instance`` command to assign the notation ``≤`` to the `is_prefix` relation. That command, which will be explained in :numref:`Chapter %s <type_classes>`, works by assigning an ``[instance]`` attribute to the associated definition.
+
+.. code-block:: lean
+
+    variable {α : Type*}
+
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    -- BEGIN
+    instance list_has_le : has_le (list α) := ⟨is_prefix⟩
+
+    theorem list.is_prefix_refl (l : list α) : l ≤ l :=
+    ⟨[], by simp⟩    
+    -- END
+
+That assignment can also be made local:
+
+.. code-block:: lean
+
+    variable {α : Type*}
+
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    -- BEGIN
+    def list_has_le : has_le (list α) := ⟨is_prefix⟩
+
+    section
+    local attribute [instance] list_has_le
+
+    theorem foo (l : list α) : l ≤ l := ⟨[], by simp⟩
+    end
+
+    -- error:
+    -- theorem bar (l : list α) : l ≤ l := ⟨[], by simp⟩
     -- END
 
 For yet another example, the ``reflexivity`` tactic makes use of objects in the environment that have been tagged with the ``[refl]`` attribute:
 
 .. code-block:: lean
 
-    def nat.dvd (m n : ℕ) : Prop := ∃ k, n = m * k
+    variable {α : Type*}
 
-    instance has_dvd_nat : has_dvd nat := ⟨nat.dvd⟩
+    def is_prefix (l₁ : list α) (l₂ : list α) : Prop := ∃ t, l₁ ++ t = l₂
+
+    infix ` <+: `:50 := is_prefix
 
     -- BEGIN
-    @[simp,refl]
-    theorem nat.dvd_refl (n : ℕ) : n ∣ n :=
-    ⟨1, by simp⟩
+    @[simp, refl]
+    theorem list.is_prefix_refl (l : list α) : l <+: l :=
+    ⟨[], by simp⟩
 
-    example : 5 ∣ 5 :=
-    by reflexivity
+    example : [1, 2, 3] <+: [1, 2, 3] := by reflexivity
     -- END
 
 The scope of the ``[refl]`` attribute can similarly be restricted using the ``local`` modifier, as above.
@@ -380,8 +403,8 @@ To illustrate the difference, consider the following example, which shows that a
 
 .. code-block:: lean
 
-    namespace hidden
     -- BEGIN
+    namespace hidden
     variables {α : Type} (r : α → α → Prop)
 
     definition reflexive  : Prop := ∀ (a : α), r a a
@@ -413,8 +436,8 @@ To illustrate the difference, consider the following example, which shows that a
     theorem th3 (reflr : reflexive r) (euclr : euclidean r) : 
       transitive r :=
     @th2 _ _ (@th1 _ _ reflr @euclr) @euclr
-    -- END
     end hidden
+    -- END
 
 The results are broken down into small steps: ``th1`` shows that a relation that is reflexive and euclidean is symmetric, and ``th2`` shows that a relation that is symmetric and euclidean is transitive. Then ``th3`` combines the two results. But notice that we have to manually disable the implicit arguments in ``th1``, ``th2``, and ``euclr``, because otherwise too many implicit arguments are inserted. The problem goes away if we use weak implicit arguments:
 
@@ -517,7 +540,6 @@ The possibility of declaring parameters in a section also makes it possible to d
 
     open int
 
-    -- BEGIN
     section mod_m
       parameter (m : ℤ)
       variables (a b c : ℤ)
@@ -547,12 +569,11 @@ The possibility of declaring parameters in a section also makes it possible to d
 
     #check (mod_trans :  ∀ (m a b c : ℤ), mod_equiv m a b → 
                            mod_equiv m b c → mod_equiv m a c)
-    -- END
 
 Coercions
 ---------
 
-In Lean, the type of natural numbers, ``nat``, is different from the type of integers, ``int``. But there is a function ``int.of_nat`` that embeds the natural numbers in the integers, meaning that we can view any natural numbers as an integer, when needed. Lean has mechanisms to detect and insert *coercions* of this sort.
+In Lean, the type of natural numbers, ``nat``, is different from the type of integers, ``int``. But there is a function ``int.of_nat`` that embeds the natural numbers in the integers, meaning that we can view any natural number as an integer, when needed. Lean has mechanisms to detect and insert *coercions* of this sort.
 
 .. code-block:: lean
 
